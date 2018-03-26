@@ -1,0 +1,61 @@
+[momohatt@server_73 sandbox]$ mpirun -np 1 -machinefile machine ./a.out
+number of trials = 1000000000, pi = 3.1416148120
+TIME: 34.910000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 2 -machinefile machine ./a.out
+Processor 1 sending results = 392702857 to master process
+number of trials = 1000000000, pi = 3.1415761200
+TIME: 17.520000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 3 -machinefile machine ./a.out
+Processor 1 sending results = 261796249 to master process
+Processor 2 sending results = 261796348 to master process
+number of trials = 999999999, pi = 3.1415680151
+TIME: 12.030000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 4 -machinefile machine ./a.out
+Processor 2 sending results = 196349332 to master process
+Processor 3 sending results = 196339123 to master process
+Processor 1 sending results = 196357939 to master process
+number of trials = 1000000000, pi = 3.1416060600
+TIME: 9.290000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 5 -machinefile machine ./a.out
+Processor 4 sending results = 157085298 to master process
+Processor 3 sending results = 157088194 to master process
+Processor 1 sending results = 157082072 to master process
+Processor 2 sending results = 157089248 to master process
+number of trials = 1000000000, pi = 3.1417201920
+TIME: 7.430000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 6 -machinefile machine ./a.out
+Processor 4 sending results = 130904073 to master process
+Processor 5 sending results = 130901476 to master process
+Processor 1 sending results = 130897181 to master process
+Processor 3 sending results = 130899510 to master process
+Processor 2 sending results = 130893910 to master process
+number of trials = 999999996, pi = 3.1416053126
+TIME: 6.430000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 7 -machinefile machine ./a.out
+Processor 4 sending results = 112204200 to master process
+Processor 5 sending results = 112204210 to master process
+Processor 6 sending results = 112202605 to master process
+Processor 3 sending results = 112189394 to master process
+Processor 2 sending results = 112199528 to master process
+Processor 1 sending results = 112200161 to master process
+number of trials = 999999994, pi = 3.1415648788
+TIME: 5.310000 sec
+[momohatt@server_73 sandbox]$ mpirun -np 8 -machinefile machine ./a.out
+Processor 4 sending results = 98176330 to master process
+Processor 5 sending results = 98170605 to master process
+Processor 7 sending results = 98172861 to master process
+Processor 1 sending results = 98166413 to master process
+Processor 3 sending results = 98169968 to master process
+Processor 2 sending results = 98163737 to master process
+Processor 6 sending results = 98164165 to master process
+number of trials = 1000000000, pi = 3.1414178240
+TIME: 4.640000 sec
+
+number of processors = 1, number of trials = 1000000000, pi = 3.1415946040, time of computation: 34.770000 sec, time of communication: 0.020000 sec
+number of processors = 2, number of trials = 1000000000, pi = 3.1416282200, time of computation: 17.390000 sec, time of communication: 0.030000 sec
+number of processors = 3, number of trials =  999999999, pi = 3.1415396431, time of computation: 11.970000 sec, time of communication: 0.030000 sec
+number of processors = 4, number of trials = 1000000000, pi = 3.1416477720, time of computation: 9.250000 sec, time of communication: 0.050000 sec
+number of processors = 5, number of trials = 1000000000, pi = 3.1415586080, time of computation: 7.390000 sec, time of communication: 0.030000 sec
+number of processors = 6, number of trials =  999999996, pi = 3.1415733686, time of computation: 6.160000 sec, time of communication: 0.020000 sec
+number of processors = 7, number of trials =  999999994, pi = 3.1416098828, time of computation: 5.280000 sec, time of communication: 0.030000 sec
+number of processors = 8, number of trials = 1000000000, pi = 3.1416290040, time of computation: 4.620000 sec, time of communication: 0.020000 sec
