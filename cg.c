@@ -51,7 +51,7 @@ void vecscalar(int ans[], int s, int a[])
         ans[i] = a[i] * s;
 }
 
-void matvec(int ans[], int* mat[], int vec[])
+void matvec(int ans[], int mat[VECSIZE][VECSIZE], int vec[])
 {
     int i, j;
     for (i = 0; i < VECSIZE; i++)
@@ -70,6 +70,22 @@ int main (int argc, char *argv[])
     int A[VECSIZE][VECSIZE];
     vecfill(x[0], 0);
     veccp(r[0], b);
+
+    // preconditioning
+    int M[VECSIZE][VECSIZE];
+    int i, j;
+    for (i = 0; i < VECSIZE; i++) {
+        for (j = 0; j < VECSIZE; j++) {
+            M[i][j] = (i == j)? (double) (1 / A[i][j]) : 0;
+        }
+    }
+    for (i = 0; i < VECSIZE; i++) {
+        for (j = 0; j < VECSIZE; j++) {
+            A[i][j] = M[i][i] * A[i][j];
+        }
+    }
+    matvec(b, M, b);
+
 
     while (!vecIsZero(r[k])) {
         k++;
