@@ -30,7 +30,6 @@ int main (int argc, char *argv[])
           {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
     double b[N] = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
     vecfill(x, 0);
-    veccp(r, b);
 
     int i, j;
 
@@ -46,27 +45,27 @@ int main (int argc, char *argv[])
             A[i][j] = M[i][i] * A[i][j];
         }
     }
-    for (i = 0; i < N; i++) {
-        b[i] *= M[i][i];
-    }
+    matvec(b, M, b);
 
 
-    while (!vecIsZero(r) && k < 10) {
+    veccp(r, b);
+    while (!vecIsZero(r)) {
         k++;
         double tmp1[N], tmp2[N];
 
         if (k == 1) {
             // r[k] = b - A * x[k]
-            matvec(tmp1, A, x);
-            vecscalar(tmp1, -1, tmp1);
-            vecadd(r, b, tmp1);
-
+//            matvec(tmp1, A, x);
+//            vecscalar(tmp1, -1, tmp1);
+//            vecadd(r, b, tmp1);
+//
             // s[1] = r[0]
             veccp(s, r);
             r_norm_cache[0] = vecdot(r, r);
         } else {
             r_norm_cache[k - 1] = vecdot(r, r);
             double beta = (double) r_norm_cache[k - 1] / r_norm_cache[k - 2];
+            // sを更新
             // s[k] = r[k-1] + beta * s[k-1]
             vecscalar(tmp1, beta, s);
             vecadd(s, r, tmp1);
@@ -80,16 +79,17 @@ int main (int argc, char *argv[])
         // x[k] = x[k-1] + alpha * s[k]
         vecscalar(tmp2, alpha, s);
         vecadd(x, x, tmp2);
-        //vecaddto(x, tmp2);
 
         // rを更新
         // r[k] = r[k-1] - alpha * A * s[k]
         vecscalar(tmp2, -1 * alpha, tmp1);
         vecadd(r, r, tmp2);
-        //vecaddto(r, tmp2);
         printVec(x, k);
     }
-    printVec(x, 0);
+    for (i = 0; i < N; i++) {
+        printf("x[%d] = %2g\n", i, x[i]);
+    }
+    //printVec(x, 0);
 
     return 0;
 }

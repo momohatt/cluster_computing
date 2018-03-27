@@ -49,13 +49,6 @@ void vecadd(double ans[], double a[], double b[])
     }
 }
 
-// void vecaddto(double a[], double b[])
-// {
-//     int i;
-//     for (i = 0; i < N; i++)
-//         a[i] += b[i];
-// }
-
 void vecscalar(double ans[], double s, double a[])
 {
     int i;
@@ -66,9 +59,25 @@ void vecscalar(double ans[], double s, double a[])
 void matvec(double ans[], double mat[N][N], double vec[])
 {
     int i, j;
-    for (i = 0; i < N; i++)
-        for (j = 0; j < N; j++)
-            ans[i] = vecdot(mat[i], vec);
+    if (ans == vec) {
+        double tmp[N];
+        for (i = 0; i < N; i++) {
+            tmp[i] = 0;
+            for (j = 0; j < N; j++) {
+                tmp[i] += mat[i][j] * vec[j];
+            }
+        }
+        for (i = 0; i < N; i++) {
+            ans[i] = tmp[i];
+        }
+    } else {
+        for (i = 0; i < N; i++) {
+            ans[i] = 0;
+            for (j = 0; j < N; j++) {
+                ans[i] += mat[i][j] * vec[j];
+            }
+        }
+    }
 }
 
 void printMat(double array[N][N])
