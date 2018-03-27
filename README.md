@@ -28,5 +28,7 @@
     * <https://docs.oracle.com/cd/E19455-01/806-2721/6jbtufgne/index.html>
 * NFS: Network File System
 
+* [東京大学情報基盤センター スーパーコンピューティング部門 講習会ビデオ](https://www.cc.u-tokyo.ac.jp/support/kosyu/materials.html)
+
 * 計算方法いろいろ
     * <http://nkl.cc.u-tokyo.ac.jp/13n/SolverIterative.pdf>
