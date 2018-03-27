@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 #define N 10
-#define EPS (1.0e-6)
 
 // to[] = from[];
 void veccp(double to[], double from[]);
@@ -21,6 +20,9 @@ double vecdot(double a[], double b[]);
 
 // ans[] = a[] + b[];
 void vecadd(double ans[], double a[], double b[]);
+
+// ans[] = a[] - b[];
+void vecsub(double ans[], double a[], double b[]);
 
 // ans = s * a[];
 void vecscalar(double ans[], double s, double a[]);

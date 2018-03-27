@@ -14,15 +14,6 @@ void vecfill(double to[], double val)
         to[i] = val;
 }
 
-bool vecIsZero(double vec[])
-{
-    int i;
-    double sum = 0.0;
-    for (i = 0; i < N; i++)
-        sum += vec[i] * vec[i];
-    return (sum < EPS)? true : false;
-}
-
 double vecdot(double a[], double b[])
 {
     int i;
@@ -46,6 +37,19 @@ void vecadd(double ans[], double a[], double b[])
     } else {
         for (i = 0; i < N; i++)
             ans[i] = a[i] + b[i];
+    }
+}
+
+void vecsub(double ans[], double a[], double b[])
+{
+    int i;
+    if (ans == a) {
+        for (i = 0; i < N; i++)
+            a[i] -= b[i];
+        ans = a;
+    } else {
+        for (i = 0; i < N; i++)
+            ans[i] = a[i] - b[i];
     }
 }
 
@@ -91,12 +95,12 @@ void printMat(double array[N][N])
     }
 }
 
-void printVec(double vec[N], int rot)
+void printVec(double vec[N], int id)
 {
     int i;
-    printf("%d: ", rot);
+    printf("%2d: ", id);
     for (i = 0; i < N; i++) {
-        printf("%f ", vec[i]);
+        printf("%.4f ", vec[i]);
     }
     putchar('\n');
 }

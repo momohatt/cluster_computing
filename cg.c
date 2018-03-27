@@ -3,11 +3,20 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "vecmat.h"
+#include "utils/vecmat.h"
 
 #define N 10
 #define MAX 100
-#define EPS  (1.0e-6)
+#define EPS  (1.0e-8)
+
+bool vecIsZero(double vec[])
+{
+    int i;
+    double sum = 0.0;
+    for (i = 0; i < N; i++)
+        sum += vec[i] * vec[i];
+    return (sum < EPS)? true : false;
+}
 
 int main (int argc, char *argv[])
 {
