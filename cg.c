@@ -42,7 +42,7 @@ void cg(double A[N][N], double b[], double x[])
     int k = 0; // index
     double r[N]; // 残差ベクトル
     double s[N]; // 最も新しく加えられた基底
-    double r_norm_cache[MAX];
+    double rr0, rr1; // norm of r (rr0: older, rr1:newer)
 
     veccp(r, b);
     while (!vecIsZero(r)) {
@@ -57,10 +57,10 @@ void cg(double A[N][N], double b[], double x[])
 //
             // s[1] = r[0]
             veccp(s, r);
-            r_norm_cache[0] = vecdot(r, r);
+            rr1 = vecdot(r, r);
         } else {
-            r_norm_cache[k - 1] = vecdot(r, r);
-            double beta = (double) r_norm_cache[k - 1] / r_norm_cache[k - 2];
+            rr1 = vecdot(r, r);
+            double beta = rr1 / rr0;
             // sを更新
             // s[k] = r[k-1] + beta * s[k-1]
             vecscalar(tmp1, beta, s);
@@ -81,6 +81,7 @@ void cg(double A[N][N], double b[], double x[])
         vecscalar(tmp2, -1 * alpha, tmp1);
         vecadd(r, r, tmp2);
         printVec(x, k);
+        rr0 = rr1;
     }
 
 }
@@ -102,7 +103,7 @@ int main (int argc, char *argv[])
     double x[N]; // 解
     vecfill(x, 0);
 
-    precond(A, b);
+    point_jakobi(A, b);
     cg(A, b, x);
 
     int i;
