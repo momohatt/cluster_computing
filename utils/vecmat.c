@@ -14,6 +14,14 @@ void vecfill(double to[], double val)
         to[i] = val;
 }
 
+void matfill(double to[N][N], double val)
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            to[i][j] = val;
+}
+
 double vecdot(double a[], double b[])
 {
     int i;
@@ -84,15 +92,56 @@ void matvec(double ans[], double mat[N][N], double vec[])
     }
 }
 
+void matmat(double ans[N][N], double A[N][N], double B[N][N])
+{
+    int i, j, k;
+    if (ans == A) {
+        double tmp[N][N];
+        for (i = 0; i < N; i++) {
+            for (j = 0; j < N; j++) {
+                tmp[i][j] = 0.0;
+                for (k = 0; k < N; k++) {
+                    tmp[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+        for (i = 0; i < N; i++)
+            for (j = 0; j < N; j++)
+                ans[i][j] = tmp[i][j];
+    } else {
+        for (i = 0; i < N; i++) {
+            for (j = 0; j < N; j++) {
+                ans[i][j] = 0.0;
+                for (k = 0; k < N; k++) {
+                    ans[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+    }
+}
+
+void transpose(double A[N][N])
+{
+    int i, j;
+    for (i = 0; i < N; i++) {
+        for (j = i + 1; j < N; j++) {
+            double tmp = A[i][j];
+            A[i][j] = A[j][i];
+            A[j][i] = tmp;
+        }
+    }
+}
+
 void printMat(double array[N][N])
 {
     int i, j;
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            printf("%f ", array[i][j]);
+            printf("%.4f ", array[i][j]);
         }
         putchar('\n');
     }
+    putchar('\n');
 }
 
 void printVec(double vec[N], int id)
@@ -102,6 +151,6 @@ void printVec(double vec[N], int id)
     for (i = 0; i < N; i++) {
         printf("%.4f ", vec[i]);
     }
-    putchar('\n');
+    printf("\n\n");
 }
 

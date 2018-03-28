@@ -13,6 +13,8 @@ void veccp(double to[], double from[]);
 // to[] = val[];
 void vecfill(double to[], double val);
 
+void matfill(double to[N][N], double val);
+
 bool vecIsZero(double vec[]);
 
 // a[] * b[];
@@ -28,6 +30,11 @@ void vecsub(double ans[], double a[], double b[]);
 void vecscalar(double ans[], double s, double a[]);
 
 void matvec(double ans[], double mat[N][N], double vec[]);
+
+void matmat(double ans[N][N], double A[N][N], double B[N][N]);
+
+// 転置
+void transpose(double A[N][N]);
 
 void printMat(double array[N][N]);
 void printVec(double vec[], int id);
