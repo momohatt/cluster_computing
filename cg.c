@@ -18,11 +18,11 @@ bool vecIsZero(double vec[])
     return (sum < EPS)? true : false;
 }
 
-void precond(double A[N][N], double b[])
+// Preconditioning
+void point_jakobi(double A[N][N], double b[])
 {
     int i, j;
 
-    // preconditioning
     double M[N][N];
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {

@@ -24,11 +24,13 @@
 
 
 ## メモ
-* NIS: Network Information Service
+* NIS(Network Information Service)の説明
     * <https://docs.oracle.com/cd/E19455-01/806-2721/6jbtufgne/index.html>
-* NFS: Network File System
+* NFS(Network File System)
 
-* [東京大学情報基盤センター スーパーコンピューティング部門 講習会ビデオ](https://www.cc.u-tokyo.ac.jp/support/kosyu/materials.html)
+* 並列化の概念についての説明
+    * [東京大学情報基盤センター スーパーコンピューティング部門 講習会ビデオ](https://www.cc.u-tokyo.ac.jp/support/kosyu/materials.html)
 
-* 計算方法いろいろ
+* 中島先生の数値解析のスライド
     * <http://nkl.cc.u-tokyo.ac.jp/13n/SolverIterative.pdf>
+    * <http://nkl.cc.u-tokyo.ac.jp/13n/SolverPrecond.pdf>
