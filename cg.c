@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <math.h>
 #include "utils/vecmat.h"
 
 #define N 10
@@ -15,7 +16,7 @@ bool vecIsZero(double vec[])
     double sum = 0.0;
     for (i = 0; i < N; i++)
         sum += vec[i] * vec[i];
-    return (sum < EPS)? true : false;
+    return (sqrt(sum) < EPS)? true : false;
 }
 
 // Preconditioning

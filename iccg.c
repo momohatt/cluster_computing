@@ -111,7 +111,7 @@ void iccg(double A[N][N], double b[], double x[])
         vecscalar(tmp, alpha, As);
         vecsub(r, r, tmp);
 
-        err = rr1;
+        err = sqrt(rr1);
 
         // rr0, rr1の更新
         rr0 = rr1;
