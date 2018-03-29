@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "utils/vecmat.h"
+#include "utils/mat_decomp.h"
 
 #define N 10
 #define MAXITER 100
@@ -42,18 +43,21 @@ void ic(double A[N][N], double L[N][N], double d[N])
 
 // u = (LDL^T)^{-1} * r を計算
 // (LDL^T) u = r をガウス消去法で解く
-void icres(double L[N][N], double d[N], double r[N], double u[N])
+void icres(double L[N][N], double d[], double r[], double u[])
 {
     int i, j, k;
-    double ldlt[N][N]; // A = L * D * L^T
+    double ldlt[N][N]; // L * D * L^T
     double A[N][N + 1]; // ldlt ++ r
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
             ldlt[i][j] = L[i][j] * d[i];
         }
     }
+
+    printMat(L);
     transpose(L);
     matmat(ldlt, ldlt, L);
+    printMat(ldlt);
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
@@ -62,26 +66,8 @@ void icres(double L[N][N], double d[N], double r[N], double u[N])
         A[i][N] = r[i];
     }
 
-    // Gauss elimination (forward elimination)
-    for (k = 0; k < N - 1; k++) {
-        double akk = A[k][k];
-        for (i = k + 1; i < N; i++) {
-            double aik = A[i][k];
-            for (j = k; j <= N; j++) {
-                A[i][j] -= aik * (A[k][j] / akk);
-            }
-        }
-    }
+    gaussian_elimination(A, u);
 
-    // Gauss elimination (backward substitution)
-    u[N - 1] = A[N - 1][N] / A[N - 1][N - 1];
-    for (i = N - 2; i >= 0; i--) {
-        double au = 0.0;
-        for (int j = i + 1; j < N; j++) {
-            au += A[i][j] * u[j];
-        }
-        u[i] = (A[i][N] - au) / A[i][i];
-    }
     return;
 }
 
@@ -90,7 +76,6 @@ void iccg(double A[N][N], double b[], double *x[])
     int i, j, k;
     double *r = malloc(sizeof(double) * N); // 残差ベクトル
     double *s = malloc(sizeof(double) * N); // 方向ベクトル
-    double *y = malloc(sizeof(double) * N); // y = Ap
     double *r2 = malloc(sizeof(double) * N); // r2 = (LDL^T)^{-1} * r
 
     double rr0, rr1; // rr0 = norm(r[k-1]), rr1 = norm(r[k])
@@ -106,38 +91,40 @@ void iccg(double A[N][N], double b[], double *x[])
     // r[0] = b - A * x[0] = b[0]
     veccp(r, b);
 
-    // s[0] = (LDL^t)^{-1} r[0]
-    icres(L, d, r, s);
+//    double e = 0.0; // error value
+    while(!vecIsZero(r)) {
+        k++;
 
-    rr0 = vecdot(r, s);
-
-    double e = 0.0; // error value
-    for (k = 0; k < MAXITER; k++) {
-        // y = A * s
-        y = matvec(A, s);
+        if (k == 1) {
+            // s[0] = (LDL^t)^{-1} r[0]
+            icres(L, d, r, s);
+            rr0 = vecdot(r, s);
+        } else {
+            icres(L, d, r, r2);
+            rr1 = vecdot(r, r2);
+            beta = rr1 / rr0;
+            s = vecadd(r2, vecscalar(beta, s));
+        }
+        double *As = matvec(A, s);
 
         // alpha = r * (LDL^t)^{-1} * r / (s * A * s)
-        alpha = rr0 / vecdot(s, y);
+        alpha = rr1 / vecdot(s, As);
 
         // x, rの更新
-        double tmp[N];
         *x = vecadd(*x, vecscalar(alpha, s));
-        r = vecsub(r, vecscalar(alpha, y));
-        icres(L, d, r, r2);
-        rr1 = vecdot(r, r2);
-        e = sqrt(rr1);
-        if (e < EPS) {
-            k++;
-            break;
-        }
+        r = vecsub(r, vecscalar(alpha, As));
 
-        beta = rr1 / rr0;
-        s = vecadd(r2, vecscalar(beta, s));
+//        e = sqrt(rr1);
+//        if (e < EPS) {
+//            k++;
+//            break;
+//        }
 
+        // printVec(r, k);
+        // rr0, rr1の更新
         rr0 = rr1;
-        printVec(r, k);
     }
-    free(r); free(s); free(y); free(r2);
+    free(r); free(s); free(r2);
     return;
 }
 
@@ -164,6 +151,15 @@ int main (int argc, char *argv[])
     for (i = 0; i < N; i++) {
         printf("x[%d] = %2g\n", i, x[i]);
     }
+
+//    // Test ICRes
+//    double L[N][N];
+//    double d[N];
+//    ic(A, L, d);
+//
+//    // L d Lt = A? : OK
+//    double r[N] = {1.0, -1.0, 2.0, -2.0, 3.0, -3.0, 4.0, -4.0, 5.0, -5.0};
+//    icres(L, d, r, x);
 
     return 0;
 }

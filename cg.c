@@ -43,6 +43,7 @@ void cg(double A[N][N], double b[], double** x)
     double *r = malloc(sizeof(double) * N); // 残差ベクトル
     double *s = malloc(sizeof(double) * N); // 最も新しく加えられた基底
     double rr0, rr1; // norm of r (rr0: older, rr1:newer)
+    double alpha, beta;
 
     // r[0] = b - A * x[0] = b
     veccp(r, b);
@@ -55,7 +56,7 @@ void cg(double A[N][N], double b[], double** x)
             rr1 = vecdot(r, r);
         } else {
             rr1 = vecdot(r, r);
-            double beta = rr1 / rr0;
+            beta = rr1 / rr0;
             // sを更新
             // s[k] = r[k-1] + beta * s[k-1]
             s = vecadd(r, vecscalar(beta, s));
@@ -65,7 +66,7 @@ void cg(double A[N][N], double b[], double** x)
         double *As = matvec(A, s);
         // printf("rr1 = %f, dot(r, r) = %f\n", rr1, vecdot(r, r));
         // note: 分子はvecdot(r, r)よりrr1の方が収束が早い(桁落ちのため?)
-        double alpha = (double) (rr1 / vecdot(s, As));
+        alpha = (double) (rr1 / vecdot(s, As));
 
         // xを更新
         // x[k] = x[k-1] + alpha * s[k]
@@ -73,10 +74,11 @@ void cg(double A[N][N], double b[], double** x)
 
         // rを更新
         // r[k] = r[k-1] - alpha * A * s[k]
-        r = vecadd(r, vecscalar(-1 * alpha, As));
+        r = vecsub(r, vecscalar(alpha, As));
         //printVec(*x, k);
         rr0 = rr1;
     }
+    free(r); free(s);
 
 }
 
