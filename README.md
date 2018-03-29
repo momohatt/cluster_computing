@@ -13,14 +13,15 @@
 | 3/23 | FrontISTRのインストール |
 | 3/26 | CG法の実装 |
 | 3/27 | Gauss-Seidel, SOR法の実装 |
-| 3/28 |  |
-| 3/29 |  |
+| 3/28 | ICCG法実装 |
+| 3/29 | ICCG法実装 |
 | 3/30 |  |
 
 ## 実装したものとか
 * モンテカルロ法を使ったpiの計算
 * CG法 (Conjugate Gradient, 共役勾配法)
 * SOR法 (Successive Over-Relaxation, 逐次加速緩和法)
+* ICCG法 (CG法の前処理として不完全コレスキー分解を用いる)
 
 
 ## メモ
