@@ -36,8 +36,8 @@ void matmat(double ans[N][N], double A[N][N], double B[N][N]);
 // 転置
 void transpose(double A[N][N]);
 
-void printMat(double array[N][N]);
-void printVec(double vec[], int id);
+void printMat(const double array[N][N]);
+void printVec(const double vec[], int id);
 
 
 #endif // _VECMAT_H_

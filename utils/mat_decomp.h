@@ -6,7 +6,7 @@
 
 #define N 10
 
-void gaussian_elimination(double A[N][N + 1], double x[]);
+void gaussian_elimination(double A[N][N], double b[], double x[]);
 
 // LU decomposition
 void lu(double A[N][N], double L[N][N], double U[N][N]);

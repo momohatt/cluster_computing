@@ -140,7 +140,7 @@ void transpose(double A[N][N])
     }
 }
 
-void printMat(double array[N][N])
+void printMat(const double array[N][N])
 {
     int i, j;
     for (i = 0; i < N; i++) {
@@ -152,7 +152,7 @@ void printMat(double array[N][N])
     putchar('\n');
 }
 
-void printVec(double vec[N], int id)
+void printVec(const double vec[N], int id)
 {
     int i;
     printf("%2d: ", id);

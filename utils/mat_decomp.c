@@ -1,6 +1,6 @@
 #include "mat_decomp.h"
 
-void gaussian_elimination(double A[N][N + 1], double x[])
+void gaussian_elimination(double A[N][N], double b[], double x[])
 {
     int i, j, k;
 
@@ -10,20 +10,21 @@ void gaussian_elimination(double A[N][N + 1], double x[])
         double akk = A[k][k];
         for (i = k + 1; i < N; i++) {
             double aik = A[i][k];
-            for (j = k; j <= N; j++) {
+            for (j = k; j < N; j++) {
                 A[i][j] -= aik * (A[k][j] / akk);
             }
+            b[i] -= aik * (b[k] / akk);
         }
     }
 
     // Back substitution
-    x[N - 1] = A[N - 1][N] / A[N - 1][N - 1];
+    x[N - 1] = b[N - 1] / A[N - 1][N - 1];
     for (i = N - 2; i >= 0; i--) {
         double ax = 0.0;
         for (int j = i + 1; j < N; j++) {
             ax += A[i][j] * x[j];
         }
-        x[i] = (A[i][N] - ax) / A[i][i];
+        x[i] = (b[i] - ax) / A[i][i];
     }
 }
 
