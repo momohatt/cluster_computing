@@ -18,18 +18,18 @@ void matfill(double to[N][N], double val);
 bool vecIsZero(double vec[]);
 
 // a[] * b[];
-double vecdot(const double a[], const double b[]);
+double vecdot(double a[], double b[]);
 
 // ans[] = a[] + b[];
-double* vecadd(double a[], double b[]);
+void vecadd(double ans[], double a[], double b[]);
 
 // ans[] = a[] - b[];
-double* vecsub(double a[], double b[]);
+void vecsub(double ans[], double a[], double b[]);
 
 // ans = s * a[];
-double* vecscalar(double s, double a[]);
+void vecscalar(double ans[], double s, double a[]);
 
-double* matvec(double mat[N][N], double vec[]);
+void matvec(double ans[], double mat[N][N], double vec[]);
 
 void matmat(double ans[N][N], double A[N][N], double B[N][N]);
 
