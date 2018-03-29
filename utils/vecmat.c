@@ -144,13 +144,14 @@ void printMat(const double array[N][N])
     putchar('\n');
 }
 
-void printVec(const double vec[N], int id)
+void printVec(const double vec[N], int id, char* name)
 {
     int i;
+    printf("%s ", name);
     printf("%2d: ", id);
     for (i = 0; i < N; i++) {
-        printf("%.4f ", vec[i]);
+        printf("%2.4f ", vec[i]);
     }
-    printf("\n\n");
+    printf("\n");
 }
 

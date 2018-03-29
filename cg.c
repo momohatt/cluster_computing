@@ -79,7 +79,7 @@ void cg(double A[N][N], double b[], double x[])
         // r[k] = r[k-1] - alpha * A * s[k]
         vecscalar(tmp2, alpha, tmp1);
         vecsub(r, r, tmp2);
-        //printVec(x, k);
+        printVec(x, k, "x");
         rr0 = rr1;
     }
 }
@@ -108,7 +108,7 @@ int main (int argc, char *argv[])
     for (i = 0; i < N; i++) {
         printf("x[%d] = %2g\n", i, x[i]);
     }
-    //printVec(x, 0);
+    //printVec(x, 0, "x");
 
     return 0;
 }

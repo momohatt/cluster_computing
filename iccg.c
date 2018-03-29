@@ -8,16 +8,7 @@
 
 #define N 10
 #define MAXITER 100
-#define EPS  (1.0e-6)
-
-bool vecIsZero(double vec[])
-{
-    int i;
-    double sum = 0.0;
-    for (i = 0; i < N; i++)
-        sum += vec[i] * vec[i];
-    return (sum < EPS)? true : false;
-}
+#define EPS  (1.0e-8)
 
 // Incomplete Cholesky Decomposition
 void ic(double A[N][N], double L[N][N], double d[N])
@@ -84,9 +75,10 @@ void iccg(double A[N][N], double b[], double x[])
     // r[0] = b - A * x[0] = b[0]
     veccp(r, b);
 
-    while(!vecIsZero(r)) {
+    double err = 1.0; // 初期値は適当(EPS以上ならなんでもよい)
+    while(err > EPS) {
         double tmp[N];
-        printVec(x, k);
+        printVec(x, k, "x");
         k++;
 
         if (k == 1) {
@@ -96,8 +88,8 @@ void iccg(double A[N][N], double b[], double x[])
         } else {
             // r2 = (LDL^t)^{-1} r
             icres(L, d, r, r2);
-            printVec(r, k);
-            //printVec(r2, k);
+            printVec(r, k, "r");
+            //printVec(r2, k, "r2");
             rr1 = vecdot(r, r2);
             beta = (double) (rr1 / rr0);
             vecscalar(tmp, beta, s);
@@ -118,6 +110,8 @@ void iccg(double A[N][N], double b[], double x[])
         vecadd(x, x, tmp);
         vecscalar(tmp, alpha, As);
         vecsub(r, r, tmp);
+
+        err = sqrt(rr1);
 
         // rr0, rr1の更新
         rr0 = rr1;
