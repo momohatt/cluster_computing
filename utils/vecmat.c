@@ -92,6 +92,30 @@ void matvec(double ans[], double mat[N][N], double vec[])
     }
 }
 
+void matadd(double ans[N][N], double A[N][N], double B[N][N])
+{
+    int i, j, k;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            ans[i][j] = A[i][j] + B[i][j];
+}
+
+void matscalar(double ans[N][N], double s, double A[N][N])
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            ans[i][j] = s * A[i][j];
+}
+
+void mat_diag_add(double ans[N][N], double A[N][N], double d[N])
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            ans[i][j] = A[i][j] + ((i == j)? d[i] : 0);
+}
+
 void matmat(double ans[N][N], double A[N][N], double B[N][N])
 {
     int i, j, k;

@@ -19,23 +19,63 @@ bool vecIsZero(double vec[])
     return (sqrt(sum) < EPS)? true : false;
 }
 
+void apply_precond(double A[N][N], double b[], double M[N][N])
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            A[i][j] *= M[i][i];
+    matvec(b, M, b);
+}
+
 // Preconditioning
 void point_jakobi(double A[N][N], double b[])
 {
     int i, j;
 
     double M[N][N];
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
             M[i][j] = (i == j)? (double) (1 / A[i][j]) : 0;
+    apply_precond(A, b, M);
+}
+
+void ssor(double A[N][N], double b[], double omega)
+{
+    if (!(omega > 0 && omega < 2)) {
+        printf("omega should be within range of (0, 2)\n");
+        return;
+    }
+    int i, j;
+    double M[N][N], d[N], L[N][N];
+
+    for (i = 0; i < N; i++) {
+        d[i] = A[i][i];
+        for (j = 0; j < N; j++) {
+            L[i][j] = (i > j)? A[i][j] : 0;
         }
     }
+
+    vecscalar(d, 1.0 / omega, d);
+    double DL[N][N];
+    double DLt[N][N];
+    mat_diag_add(DL, L, d);
+
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            A[i][j] *= M[i][i];
+            DLt[i][j] = DL[j][i];
+            DL[i][j] /= d[j];
         }
     }
-    matvec(b, M, b);
+//    printf("(D + L) * D^{-1} = \n");
+//    printMat(DL);
+//    printf("(D + L)^T = \n");
+//    printMat(DLt);
+    matmat(DL, DL, DLt);
+    matscalar(M, 1.0 / (2.0 - omega), DL);
+
+    apply_precond(A, b, M);
+    return;
 }
 
 void cg(double A[N][N], double b[], double x[])
@@ -102,14 +142,25 @@ int main (int argc, char *argv[])
     double x[N]; // 解
     vecfill(x, 0);
 
-    point_jakobi(A, b);
+    if (argc < 2) {
+        printf("usage: ./[bin] [ jp | ssor | none ] ([omega])\n");
+        return 1;
+    }
+    if (strcmp(argv[1], "jp") == 0) {
+        point_jakobi(A, b);
+    } else if (strcmp(argv[1], "ssor") == 0) {
+        if (argc < 3) {
+            printf("usage: ./[bin] ssor [omega]\n");
+            return 1;
+        }
+        ssor(A, b, atof(argv[2]));
+    }
     cg(A, b, x);
 
     int i;
     for (i = 0; i < N; i++) {
         printf("x[%d] = %2g\n", i, x[i]);
     }
-    //printVec(x, 0, "x");
 
     return 0;
 }
