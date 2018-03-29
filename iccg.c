@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <math.h>
 #include "utils/vecmat.h"
-#include "utils/mat_decomp.h"
 
 #define N 10
 #define MAXITER 100
@@ -41,6 +40,30 @@ void ic(double A[N][N], double L[N][N], double d[N])
     }
 }
 
+void icres(const double L[N][N], const double d[N], const double r[N], double u[N])
+{
+    int i, j;
+
+    // L * y = rとなるyを求める
+    double y[N];
+    for (i = 0; i < N; i++) {
+        double tmp = r[i];
+        for (j = 0; j < i; j++) {
+            tmp -= L[i][j] * y[j];
+        }
+        y[i] = tmp / L[i][i];
+    }
+
+    // y = (D Lt) uなるuを求める
+    for (i = N - 1; i >= 0; i--) {
+        double tmp = 0.0;
+        for (j = i + 1; j < N; j++) {
+            tmp += L[j][i] * u[j];
+        }
+        u[i] = y[i] - d[i] * tmp;
+    }
+}
+
 void iccg(double A[N][N], double b[], double *x[])
 {
     int i, j, k = 0;
@@ -53,46 +76,39 @@ void iccg(double A[N][N], double b[], double *x[])
 
     double d[N]; // 対角行列Dの対角成分
     double L[N][N];
-    double ldlt[N][N]; // L * D * L^T
 
     matfill(L, 0);
     vecfill(*x, 0);
     ic(A, L, d);
 
-    // ldltを計算
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            ldlt[i][j] = L[i][j] * d[i];
-        }
-    }
-    transpose(L);
-    matmat(ldlt, ldlt, L);
-    transpose(L);
-
-
     // r[0] = b - A * x[0] = b[0]
     veccp(r, b);
 
-    while(k < 10) {
+    while(!vecIsZero(r)) {
         printVec(*x, k);
         k++;
 
         if (k == 1) {
             // s[0] = (LDL^t)^{-1} r[0]
-            gaussian_elimination(ldlt, r, *x);
-            rr0 = vecdot(r, s);
+            icres(L, d, r, s);
+            rr1 = vecdot(r, s);
         } else {
-            gaussian_elimination(ldlt, r, *x);
+            // r2 = (LDL^t)^{-1} r
+            icres(L, d, r, r2);
             //printVec(r, k);
             //printVec(r2, k);
             rr1 = vecdot(r, r2);
-            beta = rr1 / rr0;
+            beta = (double) (rr1 / rr0);
             s = vecadd(r2, vecscalar(beta, s));
         }
         double *As = matvec(A, s);
 
         // alpha = r * (LDL^t)^{-1} * r / (s * A * s)
-        alpha = rr1 / vecdot(s, As);
+        alpha = (double) (rr1 / vecdot(s, As));
+
+        printf("alpha = %f\n", alpha);
+        printf("rr0 = %f\n", rr0);
+        printf("rr1 = %f\n", rr1);
 
         // x, rの更新
         *x = vecadd(*x, vecscalar(alpha, s));
