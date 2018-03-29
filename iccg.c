@@ -41,39 +41,9 @@ void ic(double A[N][N], double L[N][N], double d[N])
     }
 }
 
-// u = (LDL^T)^{-1} * r を計算
-// (LDL^T) u = r をガウス消去法で解く
-void icres(double L[N][N], double d[], double r[], double u[])
-{
-    int i, j, k;
-    double ldlt[N][N]; // L * D * L^T
-    double A[N][N + 1]; // ldlt ++ r
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            ldlt[i][j] = L[i][j] * d[i];
-        }
-    }
-
-    printMat(L);
-    transpose(L);
-    matmat(ldlt, ldlt, L);
-    printMat(ldlt);
-
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            A[i][j] = ldlt[i][j];
-        }
-        A[i][N] = r[i];
-    }
-
-    gaussian_elimination(A, u);
-
-    return;
-}
-
 void iccg(double A[N][N], double b[], double *x[])
 {
-    int i, j, k;
+    int i, j, k = 0;
     double *r = malloc(sizeof(double) * N); // 残差ベクトル
     double *s = malloc(sizeof(double) * N); // 方向ベクトル
     double *r2 = malloc(sizeof(double) * N); // r2 = (LDL^T)^{-1} * r
@@ -83,24 +53,38 @@ void iccg(double A[N][N], double b[], double *x[])
 
     double d[N]; // 対角行列Dの対角成分
     double L[N][N];
+    double ldlt[N][N]; // L * D * L^T
 
     matfill(L, 0);
     vecfill(*x, 0);
     ic(A, L, d);
 
+    // ldltを計算
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            ldlt[i][j] = L[i][j] * d[i];
+        }
+    }
+    transpose(L);
+    matmat(ldlt, ldlt, L);
+    transpose(L);
+
+
     // r[0] = b - A * x[0] = b[0]
     veccp(r, b);
 
-//    double e = 0.0; // error value
-    while(!vecIsZero(r)) {
+    while(k < 10) {
+        printVec(*x, k);
         k++;
 
         if (k == 1) {
             // s[0] = (LDL^t)^{-1} r[0]
-            icres(L, d, r, s);
+            gaussian_elimination(ldlt, r, *x);
             rr0 = vecdot(r, s);
         } else {
-            icres(L, d, r, r2);
+            gaussian_elimination(ldlt, r, *x);
+            //printVec(r, k);
+            //printVec(r2, k);
             rr1 = vecdot(r, r2);
             beta = rr1 / rr0;
             s = vecadd(r2, vecscalar(beta, s));
@@ -114,13 +98,6 @@ void iccg(double A[N][N], double b[], double *x[])
         *x = vecadd(*x, vecscalar(alpha, s));
         r = vecsub(r, vecscalar(alpha, As));
 
-//        e = sqrt(rr1);
-//        if (e < EPS) {
-//            k++;
-//            break;
-//        }
-
-        // printVec(r, k);
         // rr0, rr1の更新
         rr0 = rr1;
     }
