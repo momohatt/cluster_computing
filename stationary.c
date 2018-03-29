@@ -30,7 +30,7 @@ void gauss_seidel(double x[], double A[N][N], double b[])
             }
             x[i] /= A[i][i];
         }
-        printVec(x, k);
+        printVec(x, k, "x");
     }
 }
 
@@ -54,28 +54,33 @@ void sor(double x[], double A[N][N], double b[])
             y[i] /= A[i][i];
             x[i] += omega * (y[i] - x[i]);
         }
-        printVec(x, k);
+        printVec(x, k, "x");
     }
 }
 
 int main (int argc, char *argv[])
 {
-    double A[N][N] =
-        { {5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-          {2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-          {0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-          {0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-          {0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0},
-          {0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0},
-          {0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0},
-          {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0},
-          {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
-          {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
-    double b[N] = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
-    double x[N] = {};
+    double A[N][N];
+    double b[N];
+    double x[N] = {}; // 解
+    vecfill(x, 0);
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            scanf("%lf", &A[i][j]);
+    for (i = 0; i < N; i++)
+        scanf("%lf", &b[i]);
 
-    gauss_seidel(x, A, b);
-    //sor(x, A, b);
-    printVec(x, -1);
+    if (argc < 2) {
+        printf("usage: ./[bin] [ sor | gs ]\n");
+        return 0;
+    }
+    if (strcmp(argv[1], "sor")) {
+        sor(x, A, b);
+        printVec(x, -1, "x");
+    } else if (strcmp(argv[1], "gs")) {
+        gauss_seidel(x, A, b);
+        printVec(x, -1, "x");
+    }
     return 0;
 }

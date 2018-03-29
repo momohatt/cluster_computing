@@ -16,7 +16,7 @@ void printMat(double A[N][N + 1])
     }
 }
 
-void gauss_elimination(double A[N][N + 1], double x[])
+void gaussian_elimination(double A[N][N + 1], double x[])
 {
     int i, j, k;
 
@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
         scanf("%lf", &A[i][N]);
     }
 
-    gauss_elimination(A, x);
+    gaussian_elimination(A, x);
 
     for (i = 0; i < N; i++)
         printf("x[%d] = %.1f\n", i, x[i]);
