@@ -31,23 +31,22 @@ void point_jakobi(double A[N][N], double b[])
     }
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            A[i][j] = M[i][i] * A[i][j];
+            A[i][j] *= M[i][i];
         }
     }
-    matvec(b, M, b);
+    veccp(b, matvec(M, b));
 }
 
-void cg(double A[N][N], double b[], double x[])
+void cg(double A[N][N], double b[], double** x)
 {
     int k = 0; // index
-    double r[N]; // 残差ベクトル
-    double s[N]; // 最も新しく加えられた基底
+    double *r = malloc(sizeof(double) * N); // 残差ベクトル
+    double *s = malloc(sizeof(double) * N); // 最も新しく加えられた基底
     double rr0, rr1; // norm of r (rr0: older, rr1:newer)
 
     veccp(r, b);
     while (!vecIsZero(r)) {
         k++;
-        double tmp1[N], tmp2[N];
 
         if (k == 1) {
             // r[k] = b - A * x[k]
@@ -63,24 +62,23 @@ void cg(double A[N][N], double b[], double x[])
             double beta = rr1 / rr0;
             // sを更新
             // s[k] = r[k-1] + beta * s[k-1]
-            vecscalar(tmp1, beta, s);
-            vecadd(s, r, tmp1);
+            s = vecadd(r, vecscalar(beta, s));
         }
 
         // alpha = (r[k-1] * r[k-1]) / (s[k] * A * s[k])
-        matvec(tmp1, A, s);
-        double alpha = (double) (vecdot(r, r) / vecdot(s, tmp1));
+        double *As = matvec(A, s);
+        printf("rr1 = %f, dot(r, r) = %f\n", rr1, vecdot(r, r));
+        double alpha = (double) (rr1 / vecdot(s, As));
+        // vecdot(r, r)よりrr1の方が収束が早い(桁落ちのため)
 
         // xを更新
         // x[k] = x[k-1] + alpha * s[k]
-        vecscalar(tmp2, alpha, s);
-        vecadd(x, x, tmp2);
+        *x = vecadd(*x, vecscalar(alpha, s));
 
         // rを更新
         // r[k] = r[k-1] - alpha * A * s[k]
-        vecscalar(tmp2, -1 * alpha, tmp1);
-        vecadd(r, r, tmp2);
-        printVec(x, k);
+        r = vecadd(r, vecscalar(-1 * alpha, As));
+        //printVec(*x, k);
         rr0 = rr1;
     }
 
@@ -100,11 +98,11 @@ int main (int argc, char *argv[])
           {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
           {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
     double b[N] = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
-    double x[N]; // 解
+    double *x = malloc(sizeof(double) * N); // 解
     vecfill(x, 0);
 
     point_jakobi(A, b);
-    cg(A, b, x);
+    cg(A, b, &x);
 
     int i;
     for (i = 0; i < N; i++) {

@@ -22,7 +22,7 @@ void matfill(double to[N][N], double val)
             to[i][j] = val;
 }
 
-double vecdot(double a[], double b[])
+double vecdot(const double a[], const double b[])
 {
     int i;
     double sum;
@@ -31,65 +31,73 @@ double vecdot(double a[], double b[])
     return sum;
 }
 
-void vecadd(double ans[], double a[], double b[])
+double* vecadd(double a[], double b[])
 {
+    double *ans = malloc(sizeof(double) * N);
     int i;
-    if (ans == a) {
-        for (i = 0; i < N; i++)
-            a[i] += b[i];
-        ans = a;
-    } else if (ans == b) {
-        for (i = 0; i < N; i++)
-            b[i] += a[i];
-        ans = b;
-    } else {
+//    if (ans == a) {
+//        for (i = 0; i < N; i++)
+//            a[i] += b[i];
+//        ans = a;
+//    } else if (ans == b) {
+//        for (i = 0; i < N; i++)
+//            b[i] += a[i];
+//        ans = b;
+//    } else {
         for (i = 0; i < N; i++)
             ans[i] = a[i] + b[i];
-    }
+//    }
+    return ans;
 }
 
-void vecsub(double ans[], double a[], double b[])
+double* vecsub(double a[], double b[])
 {
+    double *ans = malloc(sizeof(double) * N);
     int i;
-    if (ans == a) {
-        for (i = 0; i < N; i++)
-            a[i] -= b[i];
-        ans = a;
-    } else {
+//    if (ans == a) {
+//        for (i = 0; i < N; i++)
+//            a[i] -= b[i];
+//        ans = a;
+//    } else {
         for (i = 0; i < N; i++)
             ans[i] = a[i] - b[i];
-    }
+//    }
+    return ans;
 }
 
-void vecscalar(double ans[], double s, double a[])
+double* vecscalar(double s, double a[])
 {
+    double *ans = malloc(sizeof(double) * N);
     int i;
     for (i = 0; i < N; i++)
         ans[i] = a[i] * s;
+    return ans;
 }
 
-void matvec(double ans[], double mat[N][N], double vec[])
+double* matvec(double mat[N][N], double vec[])
 {
+    double *ans = malloc(sizeof(double) * N);
     int i, j;
-    if (ans == vec) {
-        double tmp[N];
-        for (i = 0; i < N; i++) {
-            tmp[i] = 0;
-            for (j = 0; j < N; j++) {
-                tmp[i] += mat[i][j] * vec[j];
-            }
-        }
-        for (i = 0; i < N; i++) {
-            ans[i] = tmp[i];
-        }
-    } else {
+//    if (ans == vec) {
+//        double tmp[N];
+//        for (i = 0; i < N; i++) {
+//            tmp[i] = 0;
+//            for (j = 0; j < N; j++) {
+//                tmp[i] += mat[i][j] * vec[j];
+//            }
+//        }
+//        for (i = 0; i < N; i++) {
+//            ans[i] = tmp[i];
+//        }
+//    } else {
         for (i = 0; i < N; i++) {
             ans[i] = 0;
             for (j = 0; j < N; j++) {
                 ans[i] += mat[i][j] * vec[j];
             }
         }
-    }
+//    }
+    return ans;
 }
 
 void matmat(double ans[N][N], double A[N][N], double B[N][N])
