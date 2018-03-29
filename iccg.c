@@ -8,7 +8,7 @@
 
 #define N 10
 #define MAXITER 100
-#define EPS  (1.0e-8)
+#define EPS  (1.0e-6)
 
 bool vecIsZero(double vec[])
 {
@@ -64,12 +64,12 @@ void icres(const double L[N][N], const double d[N], const double r[N], double u[
     }
 }
 
-void iccg(double A[N][N], double b[], double *x[])
+void iccg(double A[N][N], double b[], double x[])
 {
     int i, j, k = 0;
-    double *r = malloc(sizeof(double) * N); // 残差ベクトル
-    double *s = malloc(sizeof(double) * N); // 方向ベクトル
-    double *r2 = malloc(sizeof(double) * N); // r2 = (LDL^T)^{-1} * r
+    double r[N]; // 残差ベクトル
+    double s[N]; // 方向ベクトル
+    double r2[N]; // r2 = (LDL^T)^{-1} * r
 
     double rr0, rr1; // rr0 = norm(r[k-1]), rr1 = norm(r[k])
     double alpha, beta;
@@ -78,14 +78,15 @@ void iccg(double A[N][N], double b[], double *x[])
     double L[N][N];
 
     matfill(L, 0);
-    vecfill(*x, 0);
+    vecfill(x, 0);
     ic(A, L, d);
 
     // r[0] = b - A * x[0] = b[0]
     veccp(r, b);
 
     while(!vecIsZero(r)) {
-        printVec(*x, k);
+        double tmp[N];
+        printVec(x, k);
         k++;
 
         if (k == 1) {
@@ -95,29 +96,32 @@ void iccg(double A[N][N], double b[], double *x[])
         } else {
             // r2 = (LDL^t)^{-1} r
             icres(L, d, r, r2);
-            //printVec(r, k);
+            printVec(r, k);
             //printVec(r2, k);
             rr1 = vecdot(r, r2);
             beta = (double) (rr1 / rr0);
-            s = vecadd(r2, vecscalar(beta, s));
+            vecscalar(tmp, beta, s);
+            vecadd(s, r2, tmp);
         }
-        double *As = matvec(A, s);
+        double As[N];
+        matvec(As, A, s);
 
         // alpha = r * (LDL^t)^{-1} * r / (s * A * s)
         alpha = (double) (rr1 / vecdot(s, As));
 
-        printf("alpha = %f\n", alpha);
-        printf("rr0 = %f\n", rr0);
-        printf("rr1 = %f\n", rr1);
+        //printf("alpha = %f\n", alpha);
+        //printf("rr0 = %f\n", rr0);
+        //printf("rr1 = %f\n", rr1);
 
         // x, rの更新
-        *x = vecadd(*x, vecscalar(alpha, s));
-        r = vecsub(r, vecscalar(alpha, As));
+        vecscalar(tmp, alpha, s);
+        vecadd(x, x, tmp);
+        vecscalar(tmp, alpha, As);
+        vecsub(r, r, tmp);
 
         // rr0, rr1の更新
         rr0 = rr1;
     }
-    free(r); free(s); free(r2);
     return;
 }
 
@@ -139,20 +143,11 @@ int main (int argc, char *argv[])
 
     int i, j;
 
-    iccg(A, b, &x);
+    iccg(A, b, x);
 
     for (i = 0; i < N; i++) {
         printf("x[%d] = %2g\n", i, x[i]);
     }
-
-//    // Test ICRes
-//    double L[N][N];
-//    double d[N];
-//    ic(A, L, d);
-//
-//    // L d Lt = A? : OK
-//    double r[N] = {1.0, -1.0, 2.0, -2.0, 3.0, -3.0, 4.0, -4.0, 5.0, -5.0};
-//    icres(L, d, r, x);
 
     return 0;
 }

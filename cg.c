@@ -82,8 +82,6 @@ void cg(double A[N][N], double b[], double x[])
         //printVec(x, k);
         rr0 = rr1;
     }
-    free(r); free(s);
-
 }
 
 int main (int argc, char *argv[])
