@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
     iccg(A, b, x);
 
     for (i = 0; i < N; i++) {
-        printf("x[%d] = %2g\n", i, x[i]);
+        printf("x[%d] = %f\n", i, x[i]);
     }
 
     return 0;

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define N 10
 
@@ -19,6 +20,8 @@ bool vecIsZero(double vec[]);
 
 // a[] * b[];
 double vecdot(double a[], double b[]);
+
+double vecnorm(double a[]);
 
 // ans[] = a[] + b[];
 void vecadd(double ans[], double a[], double b[]);

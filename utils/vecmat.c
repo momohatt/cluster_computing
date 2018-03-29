@@ -31,6 +31,11 @@ double vecdot(double a[], double b[])
     return sum;
 }
 
+double vecnorm(double a[])
+{
+    return sqrt(vecdot(a, a));
+}
+
 void vecadd(double ans[], double a[], double b[])
 {
     int i;

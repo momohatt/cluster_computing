@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
     gaussian_elimination(A, x);
 
     for (i = 0; i < N; i++)
-        printf("x[%d] = %.1f\n", i, x[i]);
+        printf("x[%d] = %.4f\n", i, x[i]);
     return 0;
 }
 

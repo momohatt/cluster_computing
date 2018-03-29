@@ -12,11 +12,7 @@
 
 bool vecIsZero(double vec[])
 {
-    int i;
-    double sum = 0.0;
-    for (i = 0; i < N; i++)
-        sum += vec[i] * vec[i];
-    return (sqrt(sum) < EPS)? true : false;
+    return (vecnorm(vec) < EPS)? true : false;
 }
 
 void apply_precond(double A[N][N], double b[], double M[N][N])
@@ -29,7 +25,7 @@ void apply_precond(double A[N][N], double b[], double M[N][N])
 }
 
 // Preconditioning
-void point_jakobi(double A[N][N], double b[])
+void point_jacobi(double A[N][N], double b[])
 {
     int i, j;
 
@@ -132,18 +128,20 @@ int main (int argc, char *argv[])
     double x[N]; // 解
     vecfill(x, 0);
     int i, j;
+
+    if (argc < 2) {
+        printf("usage: ./[bin] [ jacobi | ssor | none ] ([omega])\n");
+        return 1;
+    }
+
     for (i = 0; i < N; i++)
         for (j = 0; j < N; j++)
             scanf("%lf", &A[i][j]);
     for (i = 0; i < N; i++)
         scanf("%lf", &b[i]);
 
-    if (argc < 2) {
-        printf("usage: ./[bin] [ jp | ssor | none ] ([omega])\n");
-        return 1;
-    }
-    if (strcmp(argv[1], "jp") == 0) {
-        point_jakobi(A, b);
+    if (strcmp(argv[1], "jacobi") == 0) {
+        point_jacobi(A, b);
     } else if (strcmp(argv[1], "ssor") == 0) {
         if (argc < 3) {
             printf("usage: ./[bin] ssor [omega]\n");
@@ -154,7 +152,7 @@ int main (int argc, char *argv[])
     cg(A, b, x);
 
     for (i = 0; i < N; i++) {
-        printf("x[%d] = %2g\n", i, x[i]);
+        printf("x[%d] = %f\n", i, x[i]);
     }
 
     return 0;

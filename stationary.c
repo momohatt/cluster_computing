@@ -13,7 +13,7 @@ bool hasConverged(double x[], double A[N][N], double b[])
     double ax[N], r[N]; // r = b - Ax
     matvec(ax, A, x);
     vecsub(r, b, ax);
-    return (vecdot(r, r) < EPS)? true : false;
+    return (vecnorm(r) < EPS)? true : false;
 }
 
 void gauss_seidel(double x[], double A[N][N], double b[])
@@ -65,22 +65,29 @@ int main (int argc, char *argv[])
     double x[N] = {}; // 解
     vecfill(x, 0);
     int i, j;
+
+    if (argc < 2) {
+        printf("usage: ./[bin] [ sor | gs ]\n");
+        return 1;
+    }
+
     for (i = 0; i < N; i++)
         for (j = 0; j < N; j++)
             scanf("%lf", &A[i][j]);
     for (i = 0; i < N; i++)
         scanf("%lf", &b[i]);
 
-    if (argc < 2) {
-        printf("usage: ./[bin] [ sor | gs ]\n");
-        return 0;
-    }
-    if (strcmp(argv[1], "sor")) {
+    if (strcmp(argv[1], "sor") == 0) {
         sor(x, A, b);
-        printVec(x, -1, "x");
-    } else if (strcmp(argv[1], "gs")) {
+    } else if (strcmp(argv[1], "gs") == 0) {
         gauss_seidel(x, A, b);
-        printVec(x, -1, "x");
+    } else {
+        printf("invalid input. usage: ./[bin] [ sor | gs ]\n");
+        return 1;
+    }
+
+    for (i = 0; i < N; i++) {
+        printf("x[%d] = %f\n", i, x[i]);
     }
     return 0;
 }
