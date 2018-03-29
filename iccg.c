@@ -62,6 +62,7 @@ void icres(double L[N][N], double d[N], double r[N], double u[N])
         A[i][N] = r[i];
     }
 
+    // Gauss elimination (forward elimination)
     for (k = 0; k < N - 1; k++) {
         double akk = A[k][k];
         for (i = k + 1; i < N; i++) {
@@ -71,57 +72,57 @@ void icres(double L[N][N], double d[N], double r[N], double u[N])
             }
         }
     }
+
+    // Gauss elimination (backward substitution)
     u[N - 1] = A[N - 1][N] / A[N - 1][N - 1];
     for (i = N - 2; i >= 0; i--) {
-        double ax = 0.0;
+        double au = 0.0;
         for (int j = i + 1; j < N; j++) {
-            ax += A[i][j] * u[j];
+            au += A[i][j] * u[j];
         }
-        u[i] = (A[i][N] - ax) / A[i][i];
+        u[i] = (A[i][N] - au) / A[i][i];
     }
     return;
 }
 
-void iccg(double A[N][N], double b[N], double x[N])
+void iccg(double A[N][N], double b[], double *x[])
 {
     int i, j, k;
-    double r[N]; // 残差ベクトル
-    double s[N]; // 方向ベクトル
-    double y[N]; // y = Ap
-    double r2[N]; // r2 = (LDL^T)^{-1} * r
+    double *r = malloc(sizeof(double) * N); // 残差ベクトル
+    double *s = malloc(sizeof(double) * N); // 方向ベクトル
+    double *y = malloc(sizeof(double) * N); // y = Ap
+    double *r2 = malloc(sizeof(double) * N); // r2 = (LDL^T)^{-1} * r
 
     double rr0, rr1; // rr0 = norm(r[k-1]), rr1 = norm(r[k])
     double alpha, beta;
 
-    double d[N]; // 対角行列D
+    double d[N]; // 対角行列Dの対角成分
     double L[N][N];
 
     matfill(L, 0);
-    vecfill(x, 0);
+    vecfill(*x, 0);
     ic(A, L, d);
 
-    // r = b - A * x = b
+    // r[0] = b - A * x[0] = b[0]
     veccp(r, b);
 
-    // p_0 = (LDL^t)^{-1} r_0
+    // s[0] = (LDL^t)^{-1} r[0]
     icres(L, d, r, s);
 
     rr0 = vecdot(r, s);
 
-    double e = 0.0; // error?
+    double e = 0.0; // error value
     for (k = 0; k < MAXITER; k++) {
         // y = A * s
-        matvec(y, A, s);
+        y = matvec(A, s);
 
         // alpha = r * (LDL^t)^{-1} * r / (s * A * s)
         alpha = rr0 / vecdot(s, y);
 
         // x, rの更新
         double tmp[N];
-        vecscalar(tmp, alpha, s);
-        vecadd(x, x, tmp);
-        vecscalar(tmp, alpha, y);
-        vecsub(r, r, tmp);
+        *x = vecadd(*x, vecscalar(alpha, s));
+        r = vecsub(r, vecscalar(alpha, y));
         icres(L, d, r, r2);
         rr1 = vecdot(r, r2);
         e = sqrt(rr1);
@@ -131,11 +132,12 @@ void iccg(double A[N][N], double b[N], double x[N])
         }
 
         beta = rr1 / rr0;
-        vecscalar(tmp, beta, s);
-        vecadd(s, r2, tmp);
+        s = vecadd(r2, vecscalar(beta, s));
 
         rr0 = rr1;
+        printVec(r, k);
     }
+    free(r); free(s); free(y); free(r2);
     return;
 }
 
@@ -153,11 +155,11 @@ int main (int argc, char *argv[])
           {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
           {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
     double b[N] = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
-    double x[N];
+    double *x = malloc(sizeof(double) * N);
 
     int i, j;
 
-    iccg(A, b, x);
+    iccg(A, b, &x);
 
     for (i = 0; i < N; i++) {
         printf("x[%d] = %2g\n", i, x[i]);
