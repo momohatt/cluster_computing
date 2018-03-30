@@ -34,14 +34,10 @@ void gauss_seidel(double x[], double A[N][N], double b[])
     }
 }
 
-void sor(double x[], double A[N][N], double b[])
+void sor(double x[], double A[N][N], double b[], double omega)
 {
     double y[N] = {};
-    double omega;
     int i, j, k = 0;
-
-    printf("omega = ");
-    scanf("%lf", &omega);
 
     while (!hasConverged(x, A, b)) {
         k++;
@@ -58,6 +54,16 @@ void sor(double x[], double A[N][N], double b[])
     }
 }
 
+void read_input(double A[N][N], double b[])
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            scanf("%lf", &A[i][j]);
+    for (i = 0; i < N; i++)
+        scanf("%lf", &b[i]);
+}
+
 int main (int argc, char *argv[])
 {
     double A[N][N];
@@ -67,19 +73,27 @@ int main (int argc, char *argv[])
     int i, j;
 
     if (argc < 2) {
-        printf("usage: ./[bin] [ sor | gs ]\n");
+        printf("usage: ./[bin] [ sor | gs ] [(omega)]\n");
         return 1;
     }
 
-    for (i = 0; i < N; i++)
-        for (j = 0; j < N; j++)
-            scanf("%lf", &A[i][j]);
-    for (i = 0; i < N; i++)
-        scanf("%lf", &b[i]);
-
     if (strcmp(argv[1], "sor") == 0) {
-        sor(x, A, b);
+        if (argc < 3) {
+            printf("invalid input. usage: ./[bin] sor [omega]\n");
+            return 0;
+        }
+        double omega = atof(argv[2]);
+        if (omega <= 0 || omega >= 2) {
+            printf("omega should be within range of (0, 2)\n");
+            return 0;
+        }
+
+        printf("SOR method (omega = %f)\n", omega);
+        read_input(A, b);
+        sor(x, A, b, omega);
     } else if (strcmp(argv[1], "gs") == 0) {
+        printf("Gauss Seidel method\n");
+        read_input(A, b);
         gauss_seidel(x, A, b);
     } else {
         printf("invalid input. usage: ./[bin] [ sor | gs ]\n");

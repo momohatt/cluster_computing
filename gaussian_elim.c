@@ -58,6 +58,7 @@ int main (int argc, char *argv[])
         scanf("%lf", &A[i][N]);
     }
 
+    printf("Gaussian Elimination method\n");
     gaussian_elimination(A, x);
 
     for (i = 0; i < N; i++)

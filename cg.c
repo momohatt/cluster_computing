@@ -71,7 +71,6 @@ void ssor(double A[N][N], double b[], double omega)
     matscalar(M, 1.0 / (2.0 - omega), DL);
 
     apply_precond(A, b, M);
-    return;
 }
 
 void cg(double A[N][N], double b[], double x[])
@@ -121,6 +120,16 @@ void cg(double A[N][N], double b[], double x[])
     }
 }
 
+void read_input(double A[N][N], double b[])
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            scanf("%lf", &A[i][j]);
+    for (i = 0; i < N; i++)
+        scanf("%lf", &b[i]);
+}
+
 int main (int argc, char *argv[])
 {
     double A[N][N];
@@ -134,20 +143,24 @@ int main (int argc, char *argv[])
         return 1;
     }
 
-    for (i = 0; i < N; i++)
-        for (j = 0; j < N; j++)
-            scanf("%lf", &A[i][j]);
-    for (i = 0; i < N; i++)
-        scanf("%lf", &b[i]);
-
     if (strcmp(argv[1], "jacobi") == 0) {
+        printf("CG method with point Jacobi preconditioning\n");
+        read_input(A, b);
         point_jacobi(A, b);
     } else if (strcmp(argv[1], "ssor") == 0) {
         if (argc < 3) {
             printf("usage: ./[bin] ssor [omega]\n");
             return 1;
         }
+        printf("CG method with SSOR preconditioning\n");
+        read_input(A, b);
         ssor(A, b, atof(argv[2]));
+    } else if (strcmp(argv[1], "none") == 0) {
+        printf("CG method with no preconditioning\n");
+        read_input(A, b);
+    } else {
+        printf("invalid method. usage: ./[bin] [ jacobi | ssor | none ] ([omega])\n");
+        return 0;
     }
     cg(A, b, x);
 

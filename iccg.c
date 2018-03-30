@@ -126,12 +126,14 @@ int main (int argc, char *argv[])
     double x[N]; // 解
     vecfill(x, 0);
     int i, j;
+
     for (i = 0; i < N; i++)
         for (j = 0; j < N; j++)
             scanf("%lf", &A[i][j]);
     for (i = 0; i < N; i++)
         scanf("%lf", &b[i]);
 
+    printf("ICCG method\n");
     iccg(A, b, x);
 
     for (i = 0; i < N; i++) {
