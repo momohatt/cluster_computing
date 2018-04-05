@@ -90,7 +90,7 @@ void ssor(double A[N][N], double b[], double omega)
         }
     }
 
-    icres(DL, DLt, b, M_rev_b);
+    lu_substitution(DL, DLt, b, M_rev_b);
 
     matcp(A, M_rev_A);
     veccp(b, M_rev_b);

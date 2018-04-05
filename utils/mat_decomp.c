@@ -24,7 +24,7 @@ void backward_substitution(const double U[N][N], const double b[], double x[])
     }
 }
 
-void icres(const double L[N][N], const double U[N][N], const double r[N], double u[N])
+void lu_substitution(const double L[N][N], const double U[N][N], const double r[N], double u[N])
 {
     double y[N];
 

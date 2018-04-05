@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "utils/vecmat.h"
+#include "utils/mat_decomp.h"
 
 #define N 10
 #define MAXITER 100
@@ -33,26 +34,33 @@ void ic(double A[N][N], double L[N][N], double d[N])
 
 void icres(const double L[N][N], const double d[N], const double r[N], double u[N])
 {
+    double Ld[N][N];
     int i, j;
-
-    // L * y = rとなるyを求める
-    double y[N];
     for (i = 0; i < N; i++) {
-        double tmp = r[i];
-        for (j = 0; j < i; j++) {
-            tmp -= L[i][j] * y[j];
+        for (j = 0; j < N; j++) {
+            Ld[i][j] = d[i] * L[j][i];
         }
-        y[i] = tmp / L[i][i];
     }
+    lu_substitution(L, Ld, r, u);
 
-    // y = (D Lt) uなるuを求める
-    for (i = N - 1; i >= 0; i--) {
-        double tmp = 0.0;
-        for (j = i + 1; j < N; j++) {
-            tmp += L[j][i] * u[j];
-        }
-        u[i] = y[i] - d[i] * tmp;
-    }
+//    // L * y = rとなるyを求める
+//    double y[N];
+//    for (i = 0; i < N; i++) {
+//        double tmp = r[i];
+//        for (j = 0; j < i; j++) {
+//            tmp -= L[i][j] * y[j];
+//        }
+//        y[i] = tmp / L[i][i];
+//    }
+//
+//    // y = (D Lt) uなるuを求める
+//    for (i = N - 1; i >= 0; i--) {
+//        double tmp = 0.0;
+//        for (j = i + 1; j < N; j++) {
+//            tmp += L[j][i] * u[j];
+//        }
+//        u[i] = y[i] - d[i] * tmp;
+//    }
 }
 
 void iccg(double A[N][N], double b[], double x[])

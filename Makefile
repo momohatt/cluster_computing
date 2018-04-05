@@ -1,5 +1,5 @@
 iccg: iccg.c utils/vecmat.c
-	gcc -o iccg.out iccg.c utils/vecmat.c
+	gcc -o iccg.out iccg.c utils/vecmat.c utils/mat_decomp.c
 
 cg: cg.c utils/vecmat.c utils/mat_decomp.c
 	gcc -o cg.out cg.c utils/vecmat.c utils/mat_decomp.c
