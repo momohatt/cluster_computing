@@ -11,6 +11,8 @@
 // to[] = from[];
 void veccp(double to[], double from[]);
 
+void matcp(double to[N][N], double from[N][N]);
+
 // to[] = val[];
 void vecfill(double to[], double val);
 

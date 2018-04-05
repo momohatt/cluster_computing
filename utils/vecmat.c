@@ -7,6 +7,14 @@ void veccp(double to[], double from[])
         to[i] = from[i];
 }
 
+void matcp(double to[N][N], double from[N][N])
+{
+    int i, j;
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            to[i][j] = from[i][j];
+}
+
 void vecfill(double to[], double val)
 {
     int i;
@@ -176,6 +184,10 @@ void printMat(const double array[N][N])
 void printVec(const double vec[N], int id, char* name)
 {
     int i;
+    if (isnan(vec[0])) {
+        printf("error: vector %s contains NaN component\n", name);
+        exit(1);
+    }
     printf("%s ", name);
     printf("%2d: ", id);
     for (i = 0; i < N; i++) {

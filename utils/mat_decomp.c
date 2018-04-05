@@ -1,5 +1,40 @@
 #include "mat_decomp.h"
 
+void forward_substitution(const double L[N][N], const double b[], double x[])
+{
+    int i, j;
+    for (i = 0; i < N; i++) {
+        double tmp = b[i];
+        for (j = 0; j < i; j++) {
+            tmp -= L[i][j] * x[j];
+        }
+        x[i] = tmp / L[i][i];
+    }
+}
+
+void backward_substitution(const double U[N][N], const double b[], double x[])
+{
+    int i, j;
+    for (i = N - 1; i >= 0; i--) {
+        double tmp = 0.0;
+        for (j = i + 1; j < N; j++) {
+            tmp += U[i][j] * x[j];
+        }
+        x[i] = (b[i] - tmp) / U[i][i];
+    }
+}
+
+void icres(const double L[N][N], const double U[N][N], const double r[N], double u[N])
+{
+    double y[N];
+
+    // L * y = rとなるyを求める
+    forward_substitution(L, r, y);
+
+    // y = U * uなるuを求める
+    backward_substitution(U, y, u);
+}
+
 void gaussian_elimination(double A[N][N], double b[], double x[])
 {
     int i, j, k;
@@ -21,7 +56,7 @@ void gaussian_elimination(double A[N][N], double b[], double x[])
     x[N - 1] = b[N - 1] / A[N - 1][N - 1];
     for (i = N - 2; i >= 0; i--) {
         double ax = 0.0;
-        for (int j = i + 1; j < N; j++) {
+        for (j = i + 1; j < N; j++) {
             ax += A[i][j] * x[j];
         }
         x[i] = (b[i] - ax) / A[i][i];
