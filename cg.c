@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "utils/vecmat.h"
+#include "utils/mat_decomp.h"
 
 #define N 10
 #define MAX 100
@@ -13,15 +14,6 @@
 bool vecIsZero(double vec[])
 {
     return (vecnorm(vec) < EPS)? true : false;
-}
-
-void apply_precond(double A[N][N], double b[], double M[N][N])
-{
-    int i, j;
-    for (i = 0; i < N; i++)
-        for (j = 0; j < N; j++)
-            A[i][j] *= M[i][i];
-    matvec(b, M, b);
 }
 
 // Preconditioning
@@ -33,44 +25,80 @@ void point_jacobi(double A[N][N], double b[])
     for (i = 0; i < N; i++)
         for (j = 0; j < N; j++)
             M[i][j] = (i == j)? (double) (1 / A[i][j]) : 0;
-    apply_precond(A, b, M);
+    for (i = 0; i < N; i++)
+        for (j = 0; j < N; j++)
+            A[i][j] *= M[i][i];
+    matvec(b, M, b);
 }
 
 void ssor(double A[N][N], double b[], double omega)
 {
     if (!(omega > 0 && omega < 2)) {
         printf("omega should be within range of (0, 2)\n");
-        return;
+        exit(1);
     }
-    int i, j;
-    double M[N][N], d[N], L[N][N];
+    int i, j, k;
+    double d[N], L[N][N]; // Mはいらない
 
     for (i = 0; i < N; i++) {
-        d[i] = A[i][i];
+        d[i] = A[i][i] - 2.0;
         for (j = 0; j < N; j++) {
-            L[i][j] = (i > j)? A[i][j] : 0;
+            if (i == j)
+                L[i][j] = 1.0;
+            else
+                L[i][j] = (i > j)? A[i][j] : 0;
         }
     }
 
-    vecscalar(d, 1.0 / omega, d);
+    vecscalar(d, 1.0 / omega, d); // d = (1 / omega) d
     double DL[N][N];
-    double DLt[N][N];
-    mat_diag_add(DL, L, d);
+    double DLt[N][N]; // DL^T
+    mat_diag_add(DL, L, d); // DL = (1 / omega) d + L
+    double M_rev_A[N][N]; // M^{-1} * A
+    double M_rev_b[N]; // M^{-1} * b
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            DLt[i][j] = DL[j][i];
-            DL[i][j] /= d[j];
+            // d[i]は使えない(1 / omega倍した)のでA[i][i] - 2.0で代用
+            DLt[i][j] = DL[j][i] / (A[i][i] - 2.0);
         }
     }
-//    printf("(D + L) * D^{-1} = \n");
-//    printMat(DL);
-//    printf("(D + L)^T = \n");
-//    printMat(DLt);
-    matmat(DL, DL, DLt);
-    matscalar(M, 1.0 / (2.0 - omega), DL);
 
-    apply_precond(A, b, M);
+    //printf("D + L = \n");
+    //printMat(DL);
+
+    // A, bにM^{-1}を適用していく
+    // forward_substitution(DL, [Aのk列目], [Uxのk列目])
+    double Ux[N][N]; // L * Ux = A
+    for (k = 0; k < N; k++) {
+        for (i = 0; i < N; i++) {
+            double tmp = A[i][k];
+            for (j = 0; j < i; j++) {
+                tmp -= DL[i][j] * Ux[j][k];
+            }
+            Ux[i][k] = tmp / DL[i][i];
+        }
+    }
+    // backward_substitution(DLt, [Uxのk列目], [M_rev_Aのk列目])
+    for (k = 0; k < N; k++) {
+        for (i = N - 1; i >= 0; i--) {
+            double tmp = 0.0;
+            for (j = i + 1; j < N; j++) {
+                tmp += DLt[i][j] * M_rev_A[j][k];
+            }
+            M_rev_A[i][k] = (Ux[i][k] - tmp) / DLt[i][i];
+        }
+    }
+
+    icres(DL, DLt, b, M_rev_b);
+
+    matcp(A, M_rev_A);
+    veccp(b, M_rev_b);
+    vecscalar(b, (2.0 - omega) / omega, b);
+    matscalar(A, (2.0 - omega) / omega, A);
+    printMat(A);
+    printVec(b, 0, "b");
+    exit(1);
 }
 
 void cg(double A[N][N], double b[], double x[])
