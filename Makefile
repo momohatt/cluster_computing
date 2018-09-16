@@ -9,3 +9,6 @@ st: stationary.c utils/vecmat.c
 
 gauss: gaussian_elim.c
 	gcc -o gauss.out gaussian_elim.c
+
+clean:
+	rm -rf *.out
