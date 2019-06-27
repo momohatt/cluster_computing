@@ -13,7 +13,7 @@
 
 bool vecIsZero(double vec[])
 {
-    return (vecnorm(vec) < EPS)? true : false;
+    return vecnorm(vec) < EPS;
 }
 
 // Preconditioning
