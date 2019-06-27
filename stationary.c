@@ -13,7 +13,7 @@ bool hasConverged(double x[], double A[N][N], double b[])
     double ax[N], r[N]; // r = b - Ax
     matvec(ax, A, x);
     vecsub(r, b, ax);
-    return (vecnorm(r) < EPS)? true : false;
+    return vecnorm(r) < EPS;
 }
 
 void gauss_seidel(double x[], double A[N][N], double b[])
